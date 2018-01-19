@@ -1,0 +1,265 @@
+import requests
+import json
+from lxml import html
+from cloudbot import hook
+
+@hook.command("wta")
+def wta_scores(text):
+    
+    url = 'http://www.wtatennis.com/scores.json'
+
+    wta_scores = requests.get(url)
+    wta_json = json.loads(wta_scores.text)
+    wta_keys = list(wta_json.keys())
+    wta_master = {}
+
+    for key in wta_keys:
+        match = html.fromstring(wta_json[key])
+        match_type = match.get('class').split()[-1]
+        location_element = match.xpath('//div[@class="tournamentname tile_transit transit-attached"]/a/@href')
+        location = location_element[0].split('-')[-1]
+        tournament_name = match.xpath('//div[@class="tournamentname tile_transit transit-attached"]/a/text()')[0]
+        tournament = f'{tournament_name} ({location})'
+        if tournament in wta_master:
+            pass
+        else:
+            wta_master[tournament] = dict.fromkeys(
+                ['PlayerOne', 'PlayerTwo', 'OneSetList', 'TwoSetList', 'PointOne', 'PointTwo', 'Status', 'Type',
+                 'Server',
+                 'Misc'])
+            wta_master[tournament]['PlayerOne'] = []
+            wta_master[tournament]['PlayerTwo'] = []
+            wta_master[tournament]['OneSetList'] = []
+            wta_master[tournament]['TwoSetList'] = []
+            wta_master[tournament]['PointOne'] = []
+            wta_master[tournament]['PointTwo'] = []
+            wta_master[tournament]['Status'] = []
+            wta_master[tournament]['Type'] = []
+            wta_master[tournament]['Server'] = []
+            wta_master[tournament]['Misc'] = []
+        wta_master[tournament]['Type'].append(match_type)
+        players = match.xpath('//div[@class="player-name tile_transit transit-attached"]')
+        if match_type == 'singles':
+            player1 = players[0].xpath('a/text()')[0]
+            player2 = players[1].xpath('a/text()')[0]
+            if player1 in wta_master[tournament]['PlayerOne'] or player1 in wta_master[tournament][
+                'PlayerTwo'] or player2 in wta_master[tournament]['PlayerOne'] or player2 in wta_master[tournament][
+                'PlayerTwo']:
+                continue
+            else:
+                wta_master[tournament]['PlayerOne'].append(player1)
+                wta_master[tournament]['PlayerTwo'].append(player2)
+        else:
+            player11 = players[0].xpath('a/text()')[0]
+            player12 = players[1].xpath('a/text()')[0]
+            player21 = players[2].xpath('a/text()')[0]
+            player22 = players[3].xpath('a/text()')[0]
+            team1 = f'{player11} / {player12}'
+            team2 = f'{player21} / {player22}'
+            if team1 in wta_master[tournament]['PlayerOne'] or team1 in wta_master[tournament]['PlayerTwo'] or team2 in \
+                    wta_master[tournament]['PlayerOne'] or team2 in wta_master[tournament]['PlayerTwo']:
+                continue
+            else:
+                wta_master[tournament]['PlayerOne'].append(team1)
+                wta_master[tournament]['PlayerTwo'].append(team2)
+        servea = match.xpath('//div[@class="serve serve-a serve-active"]')
+        serveb = match.xpath('//div[@class="serve serve-b serve-active"]')
+        if servea:
+            wta_master[tournament]['Server'].append('PlayerOne')
+        elif serveb:
+            wta_master[tournament]['Server'].append('PlayerTwo')
+        else:
+            wta_master[tournament]['Server'].append('')
+        set1_list = match.xpath('//div[@class="set set1"]')
+        set2_list = match.xpath('//div[@class="set set2"]')
+        set3_list = match.xpath('//div[@class="set set3"]')
+        try:
+            set11 = set1_list[0].xpath('span/text()')[0]
+        except IndexError:
+            set11 = ''
+        try:
+            set21 = set1_list[1].xpath('span/text()')[0]
+        except IndexError:
+            set21 = ''
+        try:
+            set12 = set2_list[0].xpath('span/text()')[0]
+        except IndexError:
+            set12 = ''
+        try:
+            set22 = set2_list[1].xpath('span/text()')[0]
+        except IndexError:
+            set22 = ''
+        try:
+            set13 = set3_list[0].xpath('span/text()')[0]
+        except IndexError:
+            set13 = ''
+        try:
+            set23 = set3_list[1].xpath('span/text()')[0]
+        except IndexError:
+            set23 = ''
+        try:
+            point1 = match.xpath('//div[@class="point point-a"]/span/text()')[0]
+        except IndexError:
+            point1 = ''
+        try:
+            point2 = match.xpath('//div[@class="point point-b"]/span/text()')[0]
+        except IndexError:
+            point2 = ''
+        if match.xpath('//div[@class="win"]'):
+            wta_master[tournament]['Status'].append('Finished')
+        else:
+            wta_master[tournament]['Status'].append('Ongoing')
+        wta_master[tournament]['OneSetList'].append([set11, set12, set13])
+        wta_master[tournament]['TwoSetList'].append([set21, set22, set23])
+        wta_master[tournament]['PointOne'].append(point1)
+        wta_master[tournament]['PointTwo'].append(point2)
+        susp = match.xpath('.//span[text()="suspended"]')
+        if susp:
+            wta_master[tournament]['Misc'].append('(Suspended)')
+        else:
+            wta_master[tournament]['Misc'].append('')
+
+    singles = 1
+    doubles = 1
+
+    if wta_master:
+        for tourney in wta_master:
+            ons = ''
+            ond = ''
+            fins = ''
+            find = ''
+            final_string = f'{tourney}: '
+            tournament = f'{tourney}'
+            for i in range(len(wta_master[tourney]['PlayerOne'])):
+                if wta_master[tourney]['Type'][i] == 'singles':
+                    if wta_master[tourney]['Status'][i] == 'Ongoing':
+                        if wta_master[tourney]['Server'][i] == 'PlayerOne':
+                            teama = f'{wta_master[tourney]["PlayerOne"][i]} *'
+                            teamb = f'{wta_master[tourney]["PlayerTwo"][i]}'
+                        elif wta_master[tourney]['Server'][i] == 'PlayerTwo':
+                            teama = f'{wta_master[tourney]["PlayerOne"][i]}'
+                            teamb = f'{wta_master[tourney]["PlayerTwo"][i]} *'
+                        else:
+                            teama = f'{wta_master[tourney]["PlayerOne"][i]}'
+                            teamb = f'{wta_master[tourney]["PlayerTwo"][i]}'
+                        s = f'| {teama} vs. {teamb}: '
+                        if wta_master[tourney]['OneSetList'][i][0]:
+                            s = s + f'{wta_master[tourney]["OneSetList"][i][0]}-{wta_master[tourney]["TwoSetList"][i][0]}'
+                        else:
+                            pass
+                        if wta_master[tourney]['OneSetList'][i][1]:
+                            s = s + f', {wta_master[tourney]["OneSetList"][i][1]}-{wta_master[tourney]["TwoSetList"][i][1]}'
+                        else:
+                            pass
+                        if wta_master[tourney]['OneSetList'][i][2]:
+                            s = s + f', {wta_master[tourney]["OneSetList"][i][2]}-{wta_master[tourney]["TwoSetList"][i][2]}'
+                        else:
+                            pass
+                        if wta_master[tourney]['PointOne']:
+                            s = s + f' {wta_master[tourney]["PointOne"][i]}-{wta_master[tourney]["PointTwo"][i]} '
+                        else:
+                            pass
+                        ons = ons + s + wta_master[tournament]['Misc'][i]
+                    else:
+                        if sum(list(map(int, list(filter(None, wta_master[tourney]['OneSetList'][i]))))) > sum(
+                                list(map(int, list(filter(None, wta_master[tourney]['TwoSetList'][i]))))):
+                            s = f'| {wta_master[tourney]["PlayerOne"][i]} d. {wta_master[tourney]["PlayerTwo"][i]}: '
+                            if wta_master[tourney]['OneSetList'][i][0]:
+                                s = s + f'{wta_master[tourney]["OneSetList"][i][0]}-{wta_master[tourney]["TwoSetList"][i][0]}'
+                            else:
+                                pass
+                            if wta_master[tourney]['OneSetList'][i][1]:
+                                s = s + f', {wta_master[tourney]["OneSetList"][i][1]}-{wta_master[tourney]["TwoSetList"][i][1]}'
+                            else:
+                                pass
+                            if wta_master[tourney]['OneSetList'][i][2]:
+                                s = s + f', {wta_master[tourney]["OneSetList"][i][2]}-{wta_master[tourney]["TwoSetList"][i][2]}'
+                            else:
+                                pass
+                            s = s + ' '
+                        else:
+                            s = f'| {wta_master[tourney]["PlayerTwo"][i]} d. {wta_master[tourney]["PlayerOne"][i]}: '
+                            if wta_master[tourney]['OneSetList'][i][0]:
+                                s = s + f'{wta_master[tourney]["TwoSetList"][i][0]}-{wta_master[tourney]["OneSetList"][i][0]}'
+                            else:
+                                pass
+                            if wta_master[tourney]['OneSetList'][i][1]:
+                                s = s + f', {wta_master[tourney]["TwoSetList"][i][1]}-{wta_master[tourney]["OneSetList"][i][1]}'
+                            else:
+                                pass
+                            if wta_master[tourney]['OneSetList'][i][2]:
+                                s = s + f', {wta_master[tourney]["TwoSetList"][i][2]}-{wta_master[tourney]["OneSetList"][i][2]}'
+                            else:
+                                pass
+                            s = s + ' '
+                        fins = fins + s + wta_master[tourney]['Misc'][i]
+                else:
+                    if wta_master[tourney]['Status'][i] == 'Ongoing':
+                        if wta_master[tourney]['Status'][i] == 'Ongoing':
+                            if wta_master[tourney]['Server'][i] == 'PlayerOne':
+                                teama = f'{wta_master[tourney]["PlayerOne"][i]} *'
+                                teamb = f'{wta_master[tourney]["PlayerTwo"][i]}'
+                            elif wta_master[tourney]['Server'][i] == 'PlayerTwo':
+                                teama = f'{wta_master[tourney]["PlayerOne"][i]}'
+                                teamb = f'{wta_master[tourney]["PlayerTwo"][i]} *'
+                            else:
+                                teama = f'{wta_master[tourney]["PlayerOne"][i]}'
+                                teamb = f'{wta_master[tourney]["PlayerTwo"][i]}'
+                        d = f'| {teama} vs. {teamb}: '
+                        if wta_master[tourney]['OneSetList'][i][0]:
+                            d = d + f'{wta_master[tourney]["OneSetList"][i][0]}-{wta_master[tourney]["TwoSetList"][i][0]}'
+                        else:
+                            pass
+                        if wta_master[tourney]['OneSetList'][i][1]:
+                            d = d + f', {wta_master[tourney]["OneSetList"][i][1]}-{wta_master[tourney]["TwoSetList"][i][1]}'
+                        else:
+                            pass
+                        if wta_master[tourney]['OneSetList'][i][2]:
+                            d = d + f', {wta_master[tourney]["OneSetList"][i][2]}-{wta_master[tourney]["TwoSetList"][i][2]}'
+                        else:
+                            pass
+                        if wta_master[tourney]['PointOne']:
+                            d = d + f' {wta_master[tourney]["PointOne"][i]}-{wta_master[tourney]["PointTwo"][i]} '
+                        else:
+                            pass
+                        ond = ond + d + wta_master[tourney]['Misc'][i]
+                    else:
+                        if sum(list(map(int, list(filter(None, wta_master[tourney]['OneSetList'][i]))))) > sum(
+                                list(map(int, list(filter(None, wta_master[tourney]['TwoSetList'][i]))))):
+                            d = f'| {wta_master[tourney]["PlayerOne"][i]} d. {wta_master[tourney]["PlayerTwo"][i]}: '
+                            if wta_master[tourney]['OneSetList'][i][0]:
+                                d = d + f'{wta_master[tourney]["OneSetList"][i][0]}-{wta_master[tourney]["TwoSetList"][i][0]}'
+                            else:
+                                pass
+                            if wta_master[tourney]['OneSetList'][i][1]:
+                                d = d + f', {wta_master[tourney]["OneSetList"][i][1]}-{wta_master[tourney]["TwoSetList"][i][1]}'
+                            else:
+                                pass
+                            if wta_master[tourney]['OneSetList'][i][2]:
+                                d = d + f', {wta_master[tourney]["OneSetList"][i][2]}-{wta_master[tourney]["TwoSetList"][i][2]}'
+                            else:
+                                pass
+                            d = d + ' '
+                        else:
+                            d = f'| {wta_master[tourney]["PlayerTwo"][i]} d. {wta_master[tourney]["PlayerOne"][i]} '
+                            if wta_master[tourney]['OneSetList'][i][0]:
+                                d = d + f'{wta_master[tourney]["TwoSetList"][i][0]}-{wta_master[tourney]["OneSetList"][i][0]}'
+                            else:
+                                pass
+                            if wta_master[tourney]['OneSetList'][i][1]:
+                                d = d + f', {wta_master[tourney]["TwoSetList"][i][1]}-{wta_master[tourney]["OneSetList"][i][1]}'
+                            else:
+                                pass
+                            if wta_master[tourney]['OneSetList'][i][2]:
+                                d = d + f', {wta_master[tourney]["TwoSetList"][i][2]}-{wta_master[tourney]["OneSetList"][i][2]}'
+                            else:
+                                pass
+                            d = d + ' '
+                        find = find + d + wta_master[tourney]['Misc'][i]
+
+                if 'doubles' in text:
+                    final_string = tournament + ond + find
+                else:
+                    final_string = tournament + ons + fins
+                
+        return final_string
