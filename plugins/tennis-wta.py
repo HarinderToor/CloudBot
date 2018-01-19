@@ -16,8 +16,8 @@ def wta(text):
     wim_max = date(2018, 7, 15)
     us_min = date(2018, 8, 27)
     us_max = date(2018, 9, 10)
-    if (aus_min <= today <= aus_max) or (rg_min <= today <= rg_max) or (wim_min <= today <= wim_max) or (
-        us_min <= today <= us_max):
+    if (today >= aus_min and today <= aus_max) or (today >= rg_min and today <= rg_max) or (
+        today >= wim_min and today <= wim_max) or (today >= us_min and today <= us_max):
         url = 'http://www.wtatennis.com/scores_gs.json'
     else:
         url = 'http://www.wtatennis.com/scores.json'
@@ -114,8 +114,8 @@ def wta(text):
                 player22 = player22[1:]
             team1 = f'{player11} / {player12}'
             team2 = f'{player21} / {player22}'
-            if team1 in wta_master[tournament]['PlayerOne'] or team1 in wta_master[tournament]['PlayerTwo'] or \
-                team2 in wta_master[tournament]['PlayerOne'] or team2 in wta_master[tournament]['PlayerTwo']:
+            if team1 in wta_master[tournament]['PlayerOne'] or team1 in wta_master[tournament]['PlayerTwo'] or team2 in \
+                wta_master[tournament]['PlayerOne'] or team2 in wta_master[tournament]['PlayerTwo']:
                 continue
             else:
                 wta_master[tournament]['PlayerOne'].append(team1)
@@ -212,8 +212,7 @@ def wta(text):
                         if '' in wta_master[tourney]['OneSetList'][i]:
                             if (int(wta_master[tourney]['OneSetList'][i][0]) > int(
                                 wta_master[tourney]['TwoSetList'][i][0]) and int(
-                                wta_master[tourney]['OneSetList'][i][1]) > int(
-                                wta_master[tourney]['TwoSetList'][i][1])):
+                                wta_master[tourney]['OneSetList'][i][1]) > int(wta_master[tourney]['TwoSetList'][i][1])):
                                 s = f' {round_name}: {wta_master[tourney]["PlayerOne"][i]} d. {wta_master[tourney]["PlayerTwo"][i]}: '
                                 if wta_master[tourney]['OneSetList'][i][0]:
                                     s = s + f'{wta_master[tourney]["OneSetList"][i][0]}-{wta_master[tourney]["TwoSetList"][i][0]}'
@@ -254,8 +253,7 @@ def wta(text):
                                 wta_master[tourney]['TwoSetList'][i][2])) or (
                                 int(wta_master[tourney]['OneSetList'][i][0]) > int(
                                 wta_master[tourney]['TwoSetList'][i][0]) and int(
-                                wta_master[tourney]['OneSetList'][i][2]) > int(
-                                wta_master[tourney]['TwoSetList'][i][2])):
+                                wta_master[tourney]['OneSetList'][i][2]) > int(wta_master[tourney]['TwoSetList'][i][2])):
                                 s = f' {round_name}: {wta_master[tourney]["PlayerOne"][i]} d. {wta_master[tourney]["PlayerTwo"][i]}: '
                                 if wta_master[tourney]['OneSetList'][i][0]:
                                     s = s + f'{wta_master[tourney]["OneSetList"][i][0]}-{wta_master[tourney]["TwoSetList"][i][0]}'
@@ -311,8 +309,7 @@ def wta(text):
                         if '' in wta_master[tourney]['OneSetList'][i]:
                             if (int(wta_master[tourney]['OneSetList'][i][0]) > int(
                                 wta_master[tourney]['TwoSetList'][i][0]) and int(
-                                wta_master[tourney]['OneSetList'][i][1]) > int(
-                                wta_master[tourney]['TwoSetList'][i][1])):
+                                wta_master[tourney]['OneSetList'][i][1]) > int(wta_master[tourney]['TwoSetList'][i][1])):
                                 d = f' {round_name}: {wta_master[tourney]["PlayerOne"][i]} d. {wta_master[tourney]["PlayerTwo"][i]}: '
                                 if wta_master[tourney]['OneSetList'][i][0]:
                                     d = d + f'{wta_master[tourney]["OneSetList"][i][0]}-{wta_master[tourney]["TwoSetList"][i][0]}'
@@ -353,8 +350,7 @@ def wta(text):
                                 wta_master[tourney]['TwoSetList'][i][2])) or (
                                 int(wta_master[tourney]['OneSetList'][i][0]) > int(
                                 wta_master[tourney]['TwoSetList'][i][0]) and int(
-                                wta_master[tourney]['OneSetList'][i][2]) > int(
-                                wta_master[tourney]['TwoSetList'][i][2])):
+                                wta_master[tourney]['OneSetList'][i][2]) > int(wta_master[tourney]['TwoSetList'][i][2])):
                                 d = f' {round_name}: {wta_master[tourney]["PlayerOne"][i]} d. {wta_master[tourney]["PlayerTwo"][i]}: '
                                 if wta_master[tourney]['OneSetList'][i][0]:
                                     d = d + f'{wta_master[tourney]["OneSetList"][i][0]}-{wta_master[tourney]["TwoSetList"][i][0]}'
@@ -384,9 +380,10 @@ def wta(text):
                                 else:
                                     pass
                                 fin_d = fin_d + d + ' |' + wta_master[tourney]['Misc'][i]
-                    if 'doubles' in text:
-                        final_string = f'{tourney}: |' + ond + fin_d
-                    else:
-                        final_string = f'{tourney}: |' + ons + fins
 
-                    return final_string
+                if 'doubles' in text:
+                    final_string = f'{tourney}: |' + ond + fin_d
+                else:
+                    final_string = f'{tourney}: |' + ons + fins
+
+            return final_string
