@@ -15,13 +15,7 @@ def scores(text):
         month = f'0{now.month}'
     else:
         month = f'{now.month}'
-
-    if 'yesterday' or 'y' in text:
-        day = now.day - 1
-    else:
-        day = now.day
-
-    date_string = f'{now.year}-{month}-{day}'
+    date_string = f'{now.year}-{month}-{now.day}'
     time_string = f'{now.hour}{now.minute}{now.second}'
 
     url = f'http://ace.tennis.com/pulse/{date_string}_livescores_new.json?v={time_string}'
@@ -52,10 +46,11 @@ def scores(text):
                 team_data = {}
 
                 player_name = player['name']
-                if player['is_serving']:
+                if player['is_serving'] == True:
                     player_name += "*"
                 team_data['player_name'] = player_name
 
+                score_string = ""
                 set_score_list = player['set_games']
                 team_data['set_score_list'] = set_score_list
                 team_data['winner'] = player['is_winner']
@@ -121,7 +116,7 @@ def scores(text):
                     elif tourney_type == 'cw':
                         nscw = nscw + s
                 elif match['status'] == 'Finished':
-                    if match['team_data'][0]['winner']:
+                    if match['team_data'][0]['winner'] == True:
                         s = f'| {round_name}: {first_name} d. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
                         try:
                             s = s + f', {first_set_num[1]}-{second_set_num[1]}'
@@ -211,13 +206,13 @@ def scores(text):
                 final_cw = final_cw + ocw + nscw + fcw
                 final_cwstring = final_cwstring + final_cw + '\n'
 
-        if 'atp' in text.lower():
+        if text.lower() == 'atp':
             return final_mstring
-        elif 'wta' in text.lower():
+        elif text.lower() == 'wta':
             return final_wstring
-        elif 'cm' in text.lower():
+        elif text.lower() == 'cm':
             return final_cmstring
-        elif 'cw' in text.lower():
+        elif text.lower() == 'cw':
             return final_cwstring
         else:
             return"Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger))."
