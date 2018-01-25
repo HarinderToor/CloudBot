@@ -15,7 +15,12 @@ def scores(text):
         month = f'0{now.month}'
     else:
         month = f'{now.month}'
-    date_string = f'{now.year}-{month}-{now.day}'
+
+    day = now.day
+    if 'yesterday' or 'y' in text:
+        day = now.day - 1
+
+    date_string = f'{now.year}-{month}-{day}'
     time_string = f'{now.hour}{now.minute}{now.second}'
 
     url = f'http://ace.tennis.com/pulse/{date_string}_livescores_new.json?v={time_string}'
@@ -46,11 +51,10 @@ def scores(text):
                 team_data = {}
 
                 player_name = player['name']
-                if player['is_serving'] == True:
+                if player['is_serving']:
                     player_name += "*"
                 team_data['player_name'] = player_name
 
-                score_string = ""
                 set_score_list = player['set_games']
                 team_data['set_score_list'] = set_score_list
                 team_data['winner'] = player['is_winner']
@@ -116,7 +120,7 @@ def scores(text):
                     elif tourney_type == 'cw':
                         nscw = nscw + s
                 elif match['status'] == 'Finished':
-                    if match['team_data'][0]['winner'] == True:
+                    if match['team_data'][0]['winner']:
                         s = f'| {round_name}: {first_name} d. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
                         try:
                             s = s + f', {first_set_num[1]}-{second_set_num[1]}'
