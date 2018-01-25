@@ -210,13 +210,13 @@ def scores(text):
                 final_cw = final_cw + ocw + nscw + fcw
                 final_cwstring = final_cwstring + final_cw + '\n'
 
-        if text.lower() == 'atp':
+        if 'atp' in text.lower():
             return final_mstring
-        elif text.lower() == 'wta':
+        elif 'wta' in text.lower():
             return final_wstring
-        elif text.lower() == 'cm':
+        elif 'cm' in text.lower():
             return final_cmstring
-        elif text.lower() == 'cw':
+        elif 'cw' in text.lower():
             return final_cwstring
         else:
             return"Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger))."
