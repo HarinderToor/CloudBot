@@ -16,9 +16,10 @@ def scores(text):
     else:
         month = f'{now.month}'
 
-    day = now.day
     if 'yesterday' or 'y' in text:
         day = now.day - 1
+    else:
+        day = now.day
 
     date_string = f'{now.year}-{month}-{day}'
     time_string = f'{now.hour}{now.minute}{now.second}'
