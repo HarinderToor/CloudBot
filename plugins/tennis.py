@@ -31,6 +31,8 @@ def scores(text):
             continue
         elif 'Girls' in name:
             continue
+        elif 'Qualification' in name:
+            continue
         matches = tournament['events']
         city = tournament['location']
         country = tournament['country']
@@ -54,6 +56,7 @@ def scores(text):
                 set_score_list = player['set_games']
                 team_data['set_score_list'] = set_score_list
                 team_data['winner'] = player['is_winner']
+                team_data['seed'] = player['seed']
                 teams.append(team_data)
 
             match_data['status'] = match['status']
@@ -100,9 +103,17 @@ def scores(text):
                 fcw = ''
                 tourney_type = 'cw'
             for match in tourney['match_data']:
-                first_name = match['team_data'][0]['player_name']
+                if match['team_data'][0]['seed']:
+                    seed1 = match['team_data'][0]['seed']
+                    first_name= f'({seed1.upper()}){match["team_data"][0]["player_name"]}'
+                else:
+                    first_name = match['team_data'][0]['player_name']
                 first_set_num = match['team_data'][0]['set_score_list']
-                second_name = match['team_data'][1]['player_name']
+                if match['team_data'][1]['seed']:
+                    seed2 = match['team_data'][1]['seed']
+                    second_name= f'({seed2.upper()}){match["team_data"][1]["player_name"]}'
+                else:
+                    second_name = match['team_data'][1]['player_name']
                 second_set_num = match['team_data'][1]['set_score_list']
                 round_name = match['round']
                 if match['status'] == 'Not started':
@@ -135,7 +146,7 @@ def scores(text):
                         except IndexError:
                             pass
                     else:
-                        s = f'| {round_name}: {second_name} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
+                        s =  f'| {round_name}: {second_name} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
                         try:
                             s = s + f', {second_set_num[1]}-{first_set_num[1]}'
                         except IndexError:
