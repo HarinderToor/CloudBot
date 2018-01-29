@@ -105,13 +105,13 @@ def scores(text):
             for match in tourney['match_data']:
                 if match['team_data'][0]['seed']:
                     seed1 = match['team_data'][0]['seed']
-                    first_name= f'({seed1.upper()}){match["team_data"][0]["player_name"]}'
+                    first_name = f'({seed1.upper()}){match["team_data"][0]["player_name"]}'
                 else:
                     first_name = match['team_data'][0]['player_name']
                 first_set_num = match['team_data'][0]['set_score_list']
                 if match['team_data'][1]['seed']:
                     seed2 = match['team_data'][1]['seed']
-                    second_name= f'({seed2.upper()}){match["team_data"][1]["player_name"]}'
+                    second_name = f'({seed2.upper()}){match["team_data"][1]["player_name"]}'
                 else:
                     second_name = match['team_data'][1]['player_name']
                 second_set_num = match['team_data'][1]['set_score_list']
@@ -146,7 +146,7 @@ def scores(text):
                         except IndexError:
                             pass
                     else:
-                        s =  f'| {round_name}: {second_name} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
+                        s = f'| {round_name}: {second_name} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
                         try:
                             s = s + f', {second_set_num[1]}-{first_set_num[1]}'
                         except IndexError:
@@ -174,9 +174,9 @@ def scores(text):
                         fcw = fcw + s
                 else:
                     try:
-                        s = f'| {first_name} vs. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
+                        s = f'| {round_name}: {first_name} vs. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
                     except IndexError:
-                        s = f'| {first_name} vs. {second_name}: 0-0'
+                        s = f'| {round_name}: {first_name} vs. {second_name}: 0-0'
                     try:
                         s = s + f', {first_set_num[1]}-{second_set_num[1]}'
                     except IndexError:
@@ -226,4 +226,4 @@ def scores(text):
         elif text.lower() == 'cw':
             return final_cwstring
         else:
-            return"Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger))."
+            return "Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger))."
