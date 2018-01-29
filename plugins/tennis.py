@@ -23,8 +23,8 @@ def scores(text):
 
     tournaments = scores_json['tournaments']
     results = []
-    bold = '\033[1m'
-    end = '\033[0m'
+    bold = '\x02'
+    end = '\x02'
 
     for tournament in tournaments:
         tournament_data = {}
