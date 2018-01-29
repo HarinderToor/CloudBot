@@ -23,6 +23,8 @@ def scores(text):
 
     tournaments = scores_json['tournaments']
     results = []
+    bold = '\033[1m'
+    end = '\033[0m'
 
     for tournament in tournaments:
         tournament_data = {}
@@ -79,25 +81,25 @@ def scores(text):
         for tourney in results:
             tourney_type = ''
             if tourney['gender'] == 'male' and 'Challenger' not in tourney['name']:
-                final_m = f'{tourney["name"]} ({tourney["city"]}, {tourney["country"]}): '
+                final_m = f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){end}: '
                 nsm = ''
                 om = ''
                 fm = ''
                 tourney_type = 'a'
             elif tourney['gender'] == 'female' and 'Challenger' not in tourney['name']:
-                final_w = f'{tourney["name"]} ({tourney["city"]}, {tourney["country"]}): '
+                final_w = f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){end}: '
                 nsw = ''
                 ow = ''
                 fw = ''
                 tourney_type = 'w'
             elif tourney['gender'] == 'male' and 'Challenger' in tourney['name']:
-                final_cm = f'{tourney["name"]} ({tourney["city"]}, {tourney["country"]}): '
+                final_cm = f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){end}: '
                 nscm = ''
                 ocm = ''
                 fcm = ''
                 tourney_type = 'cm'
             elif tourney['gender'] == 'female' and 'Challenger' in tourney['name']:
-                final_cw = f'{tourney["name"]} ({tourney["city"]}, {tourney["country"]}): '
+                final_cw = f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){end}: '
                 nscw = ''
                 ocw = ''
                 fcw = ''
@@ -218,12 +220,20 @@ def scores(text):
                 final_cwstring = final_cwstring + final_cw + '\n'
 
         if text.lower() == 'atp':
-            return final_mstring
+            if final_mstring == '':
+                final_mstring = 'No ATP matches today.'
+            print(final_mstring)
         elif text.lower() == 'wta':
-            return final_wstring
+            if final_wstring == '':
+                final_wstring = 'No WTA matches today.'
+            print(final_wstring)
         elif text.lower() == 'cm':
-            return final_cmstring
+            if final_cmstring == '':
+                final_cmstring = "No ATP Challenger matches today."
+            print(final_cmstring)
         elif text.lower() == 'cw':
-            return final_cwstring
+            if final_cwstring == '':
+                final_cwstring = "No WTA Challenger/125k matches today."
+            print(final_cwstring)
         else:
-            return "Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger))."
+            print("Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger)).")
