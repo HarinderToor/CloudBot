@@ -222,18 +222,18 @@ def scores(text):
         if text.lower() == 'atp':
             if final_mstring == '':
                 final_mstring = 'No ATP matches today.'
-            print(final_mstring)
+            return(final_mstring)
         elif text.lower() == 'wta':
             if final_wstring == '':
                 final_wstring = 'No WTA matches today.'
-            print(final_wstring)
+            return(final_wstring)
         elif text.lower() == 'cm':
             if final_cmstring == '':
                 final_cmstring = "No ATP Challenger matches today."
-            print(final_cmstring)
+            return(final_cmstring)
         elif text.lower() == 'cw':
             if final_cwstring == '':
                 final_cwstring = "No WTA Challenger/125k matches today."
-            print(final_cwstring)
+            return(final_cwstring)
         else:
-            print("Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger)).")
+            return("Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger)).")
