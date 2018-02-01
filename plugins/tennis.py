@@ -27,7 +27,7 @@ def scores(text):
     tournaments = scores_json['tournaments']
     results = []
     bold = '\x02'
-    green = '\x0303'
+    green = '\x0309'
 
     for tournament in tournaments:
         tournament_data = {}
