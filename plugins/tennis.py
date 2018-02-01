@@ -9,12 +9,15 @@ from cloudbot import hook
 
 @hook.command("scores", "tennis", "game", "match")
 def scores(text):
-
     now = datetime.now()
     if now.month < 10:
         month = f'0{now.month}'
     else:
         month = f'{now.month}'
+    if now.day < 10:
+        day = f'0{now.day}'
+    else:
+        day = f'{now.month}'
     date_string = f'{now.year}-{month}-{now.day}'
     time_string = f'{now.hour}{now.minute}{now.second}'
 
@@ -24,7 +27,7 @@ def scores(text):
     tournaments = scores_json['tournaments']
     results = []
     bold = '\x02'
-    end = '\x02'
+    green = '\x0303'
 
     for tournament in tournaments:
         tournament_data = {}
@@ -51,7 +54,7 @@ def scores(text):
 
                 player_name = player['name']
                 if player['is_serving'] == True:
-                    player_name += "*"
+                    player_name = f'{green}{player_name}{green}'
                 team_data['player_name'] = player_name
 
                 score_string = ""
@@ -81,25 +84,25 @@ def scores(text):
         for tourney in results:
             tourney_type = ''
             if tourney['gender'] == 'male' and 'Challenger' not in tourney['name']:
-                final_m = f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){end}: '
+                final_m = f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){bold}: '
                 nsm = ''
                 om = ''
                 fm = ''
                 tourney_type = 'a'
             elif tourney['gender'] == 'female' and 'Challenger' not in tourney['name']:
-                final_w = f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){end}: '
+                final_w = f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){bold}: '
                 nsw = ''
                 ow = ''
                 fw = ''
                 tourney_type = 'w'
             elif tourney['gender'] == 'male' and 'Challenger' in tourney['name']:
-                final_cm = f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){end}: '
+                final_cm = f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){bold}: '
                 nscm = ''
                 ocm = ''
                 fcm = ''
                 tourney_type = 'cm'
             elif tourney['gender'] == 'female' and 'Challenger' in tourney['name']:
-                final_cw = f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){end}: '
+                final_cw = f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){bold}: '
                 nscw = ''
                 ocw = ''
                 fcw = ''
@@ -130,7 +133,7 @@ def scores(text):
                         nscw = nscw + s
                 elif match['status'] == 'Finished':
                     if match['team_data'][0]['winner'] == True:
-                        s = f'| {round_name}: {first_name} d. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
+                        s = f'| {round_name}: {bold}{first_name}{bold} d. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
                         try:
                             s = s + f', {first_set_num[1]}-{second_set_num[1]}'
                         except IndexError:
@@ -148,7 +151,7 @@ def scores(text):
                         except IndexError:
                             pass
                     else:
-                        s = f'| {round_name}: {second_name} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
+                        s = f'| {round_name}: {bold}{second_name}{bold} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
                         try:
                             s = s + f', {second_set_num[1]}-{first_set_num[1]}'
                         except IndexError:
@@ -222,18 +225,18 @@ def scores(text):
         if text.lower() == 'atp':
             if final_mstring == '':
                 final_mstring = 'No ATP matches today.'
-            return(final_mstring)
+            return (final_mstring)
         elif text.lower() == 'wta':
             if final_wstring == '':
                 final_wstring = 'No WTA matches today.'
-            return(final_wstring)
+            return (final_wstring)
         elif text.lower() == 'cm':
             if final_cmstring == '':
                 final_cmstring = "No ATP Challenger matches today."
-            return(final_cmstring)
+            return (final_cmstring)
         elif text.lower() == 'cw':
             if final_cwstring == '':
                 final_cwstring = "No WTA Challenger/125k matches today."
-            return(final_cwstring)
+            return (final_cwstring)
         else:
-            return("Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger)).")
+            return ("Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger)).")
