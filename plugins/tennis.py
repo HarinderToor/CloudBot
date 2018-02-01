@@ -28,6 +28,7 @@ def scores(text):
     results = []
     bold = '\x02'
     green = '\x0309'
+    clear = '\x0F'
 
     for tournament in tournaments:
         tournament_data = {}
@@ -54,7 +55,7 @@ def scores(text):
 
                 player_name = player['name']
                 if player['is_serving'] == True:
-                    player_name = f'{green}{player_name}{green}'
+                    player_name = f'{green}{player_name}{clear}'
                 team_data['player_name'] = player_name
 
                 score_string = ""
