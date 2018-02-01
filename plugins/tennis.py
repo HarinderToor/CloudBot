@@ -18,7 +18,7 @@ def scores(text):
         day = f'0{now.day}'
     else:
         day = f'{now.month}'
-    date_string = f'{now.year}-{month}-{now.day}'
+    date_string = f'{now.year}-{month}-{day}'
     time_string = f'{now.hour}{now.minute}{now.second}'
 
     url = f'http://ace.tennis.com/pulse/{date_string}_livescores_new.json?v={time_string}'
