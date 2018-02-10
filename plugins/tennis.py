@@ -9,7 +9,7 @@ from cloudbot import hook
 
 @hook.command("scores", "tennis", "game", "match")
 def scores(text):
-    
+
     now = datetime.now()
     if now.month < 10:
         month = f'0{now.month}'
@@ -18,7 +18,7 @@ def scores(text):
     if now.day < 10:
         day = f'0{now.day}'
     else:
-        day = f'{now.month}'
+        day = f'{now.day}'
     date_string = f'{now.year}-{month}-{day}'
     time_string = f'{now.hour}{now.minute}{now.second}'
 
