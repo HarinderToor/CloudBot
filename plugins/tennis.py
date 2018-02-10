@@ -9,6 +9,7 @@ from cloudbot import hook
 
 @hook.command("scores", "tennis", "game", "match")
 def scores(text):
+    
     now = datetime.now()
     if now.month < 10:
         month = f'0{now.month}'
@@ -27,8 +28,8 @@ def scores(text):
     tournaments = scores_json['tournaments']
     results = []
     bold = '\x02'
-    green = '\x0309'
-    clear = '\x0F'
+    color = '\x0303'
+    colorend = '\x03'
 
     for tournament in tournaments:
         tournament_data = {}
@@ -55,7 +56,7 @@ def scores(text):
 
                 player_name = player['name']
                 if player['is_serving'] == True:
-                    player_name = f'{green}{player_name}{clear}'
+                    player_name = f'{color}{player_name}{colorend}'
                 team_data['player_name'] = player_name
 
                 score_string = ""
@@ -111,13 +112,13 @@ def scores(text):
             for match in tourney['match_data']:
                 if match['team_data'][0]['seed']:
                     seed1 = match['team_data'][0]['seed']
-                    first_name = f'({seed1.upper()}){match["team_data"][0]["player_name"]}'
+                    first_name= f'({seed1.upper()}){match["team_data"][0]["player_name"]}'
                 else:
                     first_name = match['team_data'][0]['player_name']
                 first_set_num = match['team_data'][0]['set_score_list']
                 if match['team_data'][1]['seed']:
                     seed2 = match['team_data'][1]['seed']
-                    second_name = f'({seed2.upper()}){match["team_data"][1]["player_name"]}'
+                    second_name= f'({seed2.upper()}){match["team_data"][1]["player_name"]}'
                 else:
                     second_name = match['team_data'][1]['player_name']
                 second_set_num = match['team_data'][1]['set_score_list']
@@ -134,7 +135,10 @@ def scores(text):
                         nscw = nscw + s
                 elif match['status'] == 'Finished':
                     if match['team_data'][0]['winner'] == True:
-                        s = f'| {round_name}: {bold}{first_name}{bold} d. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
+                        try:
+                            s = f'| {round_name}: {bold}{first_name}{bold} d. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
+                        except IndexError:
+                            s = f'| {round_name}: {bold}{first_name}{bold} d. {second_name}: w/o'
                         try:
                             s = s + f', {first_set_num[1]}-{second_set_num[1]}'
                         except IndexError:
@@ -151,8 +155,16 @@ def scores(text):
                             s = s + f', {first_set_num[4]}-{second_set_num[4]}'
                         except IndexError:
                             pass
+                        try:
+                            if int(first_set_num[-1]) <= 5:
+                                s = s + '(ret.)'
+                        except IndexError:
+                            pass
                     else:
-                        s = f'| {round_name}: {bold}{second_name}{bold} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
+                        try:
+                            s = f'| {round_name}: {bold}{second_name}{bold} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
+                        except IndexError:
+                            s = f'| {round_name}: {bold}{second_name}{bold} d. {first_name}: w/o'
                         try:
                             s = s + f', {second_set_num[1]}-{first_set_num[1]}'
                         except IndexError:
@@ -167,6 +179,11 @@ def scores(text):
                             pass
                         try:
                             s = s + f', {second_set_num[4]}-{first_set_num[4]}'
+                        except IndexError:
+                            pass
+                        try:
+                            if int(second_set_num[-1]) <= 5:
+                                s = s + '(ret.)'
                         except IndexError:
                             pass
                     s = s + ' '
@@ -226,18 +243,18 @@ def scores(text):
         if text.lower() == 'atp':
             if final_mstring == '':
                 final_mstring = 'No ATP matches today.'
-            return (final_mstring)
+            return(final_mstring)
         elif text.lower() == 'wta':
             if final_wstring == '':
                 final_wstring = 'No WTA matches today.'
-            return (final_wstring)
+            return(final_wstring)
         elif text.lower() == 'cm':
             if final_cmstring == '':
                 final_cmstring = "No ATP Challenger matches today."
-            return (final_cmstring)
+            return(final_cmstring)
         elif text.lower() == 'cw':
             if final_cwstring == '':
                 final_cwstring = "No WTA Challenger/125k matches today."
-            return (final_cwstring)
+            return(final_cwstring)
         else:
-            return ("Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger)).")
+            return("Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger)).")
