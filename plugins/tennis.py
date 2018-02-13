@@ -226,7 +226,7 @@ def scores(text):
                         ocm = ocm + s
                     elif tourney_type == 'cw':
                         ocw = ocw + s
-
+ 
             if tourney_type == 'a':
                 final_m = final_m + om + nsm + fm
                 final_mstring = final_mstring + final_m + '\n'
@@ -240,21 +240,128 @@ def scores(text):
                 final_cw = final_cw + ocw + nscw + fcw
                 final_cwstring = final_cwstring + final_cw + '\n'
 
-        if text.lower() == 'atp':
-            if final_mstring == '':
-                final_mstring = 'No ATP matches today.'
-            return(final_mstring)
-        elif text.lower() == 'wta':
-            if final_wstring == '':
-                final_wstring = 'No WTA matches today.'
-            return(final_wstring)
-        elif text.lower() == 'cm':
-            if final_cmstring == '':
-                final_cmstring = "No ATP Challenger matches today."
-            return(final_cmstring)
-        elif text.lower() == 'cw':
-            if final_cwstring == '':
-                final_cwstring = "No WTA Challenger/125k matches today."
-            return(final_cwstring)
+        league_list = ['atp','wta','cm','cw']
+
+        if text in league_list:
+            if text.lower() == 'atp':
+                if final_mstring == '':
+                    final_mstring = 'No ATP matches today.'
+                return(final_mstring)
+            elif text.lower() == 'wta':
+                if final_wstring == '':
+                    final_wstring = 'No WTA matches today.'
+                return(final_wstring)
+            elif text.lower() == 'cm':
+                if final_cmstring == '':
+                    final_cmstring = "No ATP Challenger matches today."
+                return(final_cmstring)
+            elif text.lower() == 'cw':
+                if final_cwstring == '':
+                    final_cwstring = "No WTA Challenger/125k matches today."
+                return(final_cwstring)
+            # else:
+            #     print("Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger)).")
         else:
-            return("Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger)).")
+            final_pstring = ''
+            for i in range(len(results)):
+                for j in range(len(results[i]['match_data'])):
+                    player1 = results[i]['match_data'][j]['team_data'][0]['player_name']
+                    player2 = results[i]['match_data'][j]['team_data'][1]['player_name']
+                    if text in player1.lower() or text in player2.lower():
+                        tourney = results[i]
+                        match = tourney['match_data'][j]
+                        final_pstring = final_pstring + f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){bold}: '
+                        if match['team_data'][0]['seed']:
+                            seed1 = match['team_data'][0]['seed']
+                            first_name= f'({seed1.upper()}){match["team_data"][0]["player_name"]}'
+                        else:
+                            first_name = match['team_data'][0]['player_name']
+                        first_set_num = match['team_data'][0]['set_score_list']
+                        if match['team_data'][1]['seed']:
+                            seed2 = match['team_data'][1]['seed']
+                            second_name= f'({seed2.upper()}){match["team_data"][1]["player_name"]}'
+                        else:
+                            second_name = match['team_data'][1]['player_name']
+                        second_set_num = match['team_data'][1]['set_score_list']
+                        round_name = match['round']
+                        if match['status'] == 'Not started':
+                            final_pstring = final_pstring + f'| {round_name}: {first_name} vs. {second_name} '
+                        elif match['status'] == 'Finished':
+                            if match['team_data'][0]['winner'] == True:
+                                try:
+                                    final_pstring = final_pstring + f'| {round_name}: {bold}{first_name}{bold} d. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
+                                except IndexError:
+                                    final_pstring = final_pstring + f'| {round_name}: {bold}{first_name}{bold} d. {second_name}: w/o'
+                                try:
+                                    final_pstring = final_pstring + f', {first_set_num[1]}-{second_set_num[1]}'
+                                except IndexError:
+                                    pass
+                                try:
+                                    final_pstring = final_pstring + f', {first_set_num[2]}-{second_set_num[2]}'
+                                except IndexError:
+                                    pass
+                                try:
+                                    final_pstring = final_pstring + f', {first_set_num[3]}-{second_set_num[3]}'
+                                except IndexError:
+                                    pass
+                                try:
+                                    final_pstring = final_pstring + f', {first_set_num[4]}-{second_set_num[4]}'
+                                except IndexError:
+                                    pass
+                                try:
+                                    if int(first_set_num[-1]) <= 5:
+                                        final_pstring = final_pstring + '(ret.)'
+                                except IndexError:
+                                    pass
+                            else:
+                                try:
+                                    final_pstring = final_pstring + f'| {round_name}: {bold}{second_name}{bold} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
+                                except IndexError:
+                                    final_pstring = final_pstring + f'| {round_name}: {bold}{second_name}{bold} d. {first_name}: w/o'
+                                try:
+                                    final_pstring = final_pstring + f', {second_set_num[1]}-{first_set_num[1]}'
+                                except IndexError:
+                                    pass
+                                try:
+                                    final_pstring = final_pstring + f', {second_set_num[2]}-{first_set_num[2]}'
+                                except IndexError:
+                                    pass
+                                try:
+                                    final_pstring = final_pstring + f', {second_set_num[3]}-{first_set_num[3]}'
+                                except IndexError:
+                                    pass
+                                try:
+                                    final_pstring = final_pstring + f', {second_set_num[4]}-{first_set_num[4]}'
+                                except IndexError:
+                                    pass
+                                try:
+                                    if int(second_set_num[-1]) <= 5:
+                                        final_pstring = final_pstring + '(ret.)'
+                                except IndexError:
+                                    pass
+                        else:
+                            try:
+                                final_pstring = final_pstring + f'| {round_name}: {first_name} vs. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
+                            except IndexError:
+                                final_pstring = final_pstring + f'| {round_name}: {first_name} vs. {second_name}: 0-0'
+                            try:
+                                final_pstring = final_pstring + f', {first_set_num[1]}-{second_set_num[1]}'
+                            except IndexError:
+                                pass
+                            try:
+                                final_pstring = final_pstring + f', {first_set_num[2]}-{second_set_num[2]}'
+                            except IndexError:
+                                pass
+                            try:
+                                final_pstring = final_pstring + f', {first_set_num[3]}-{second_set_num[3]}'
+                            except IndexError:
+                                pass
+                            try:
+                                final_pstring = final_pstring + f', {first_set_num[4]}-{second_set_num[4]}'
+                            except IndexError:
+                                pass
+                        final_pstring = final_pstring + '\n'
+            if not final_pstring or len(text) < 3:
+                final_pstring = "Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger) or a player that has been/is in/will be in a match today.). Player name input must be at least 3 characters (sorry Li Na)."
+            return(final_pstring)
+   
