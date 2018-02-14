@@ -122,9 +122,8 @@ def scores(text):
                 else:
                     second_name = match['team_data'][1]['player_name']
                 second_set_num = match['team_data'][1]['set_score_list']
-                round_name = match['round']
                 if match['status'] == 'Not started':
-                    s = f'| {round_name}: {first_name} vs. {second_name} '
+                    s = f'| {first_name} vs. {second_name} '
                     if tourney_type == 'a':
                         nsm = nsm + s
                     elif tourney_type == 'w':
@@ -136,9 +135,9 @@ def scores(text):
                 elif match['status'] == 'Finished':
                     if match['team_data'][0]['winner'] == True:
                         try:
-                            s = f'| {round_name}: {bold}{first_name}{bold} d. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
+                            s = f'| {bold}{first_name}{bold} d. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
                         except IndexError:
-                            s = f'| {round_name}: {bold}{first_name}{bold} d. {second_name}: w/o'
+                            s = f'| {bold}{first_name}{bold} d. {second_name}: w/o'
                         try:
                             s = s + f', {first_set_num[1]}-{second_set_num[1]}'
                         except IndexError:
@@ -162,9 +161,9 @@ def scores(text):
                             pass
                     else:
                         try:
-                            s = f'| {round_name}: {bold}{second_name}{bold} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
+                            s = f'| {bold}{second_name}{bold} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
                         except IndexError:
-                            s = f'| {round_name}: {bold}{second_name}{bold} d. {first_name}: w/o'
+                            s = f'| {bold}{second_name}{bold} d. {first_name}: w/o'
                         try:
                             s = s + f', {second_set_num[1]}-{first_set_num[1]}'
                         except IndexError:
@@ -197,9 +196,9 @@ def scores(text):
                         fcw = fcw + s
                 else:
                     try:
-                        s = f'| {round_name}: {first_name} vs. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
+                        s = f'| {first_name} vs. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
                     except IndexError:
-                        s = f'| {round_name}: {first_name} vs. {second_name}: 0-0'
+                        s = f'| {first_name} vs. {second_name}: 0-0'
                     try:
                         s = s + f', {first_set_num[1]}-{second_set_num[1]}'
                     except IndexError:
@@ -291,16 +290,15 @@ def scores(text):
                         else:
                             second_name = match['team_data'][1]['player_name']
                         second_set_num = match['team_data'][1]['set_score_list']
-                        round_name = match['round']
                         if match['status'] == 'Not started':
-                            s = f'| {round_name}: {first_name} vs. {second_name} '
+                            s = f'| {first_name} vs. {second_name} '
                             ot = ot + s
                         elif match['status'] == 'Finished':
                             if match['team_data'][0]['winner'] == True:
                                 try:
-                                    s = f'| {round_name}: {bold}{first_name}{bold} d. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
+                                    s = f'| {bold}{first_name}{bold} d. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
                                 except IndexError:
-                                    s = f'| {round_name}: {bold}{first_name}{bold} d. {second_name}: w/o'
+                                    s = f'| {bold}{first_name}{bold} d. {second_name}: w/o'
                                 try:
                                     s = s + f', {first_set_num[1]}-{second_set_num[1]}'
                                 except IndexError:
@@ -324,9 +322,9 @@ def scores(text):
                                     pass
                             else:
                                 try:
-                                    s = f'| {round_name}: {bold}{second_name}{bold} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
+                                    s = f'| {bold}{second_name}{bold} d. {first_name}: {second_set_num[0]}-{first_set_num[0]}'
                                 except IndexError:
-                                    s = s + f'| {round_name}: {bold}{second_name}{bold} d. {first_name}: w/o'
+                                    s = f'| {bold}{second_name}{bold} d. {first_name}: w/o'
                                 try:
                                     s = s + f', {second_set_num[1]}-{first_set_num[1]}'
                                 except IndexError:
@@ -351,9 +349,9 @@ def scores(text):
                             ft = ft + s + ' '
                         else:
                             try:
-                                s = f'| {round_name}: {first_name} vs. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
+                                s = f'| {first_name} vs. {second_name}: {first_set_num[0]}-{second_set_num[0]}'
                             except IndexError:
-                                s = f'| {round_name}: {first_name} vs. {second_name}: 0-0'
+                                s = f'| {first_name} vs. {second_name}: 0-0'
                             try:
                                 s = s + f', {first_set_num[1]}-{second_set_num[1]}'
                             except IndexError:
