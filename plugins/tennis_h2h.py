@@ -8,16 +8,16 @@ from cloudbot import hook
 def h2ha(text):
     """<name/name> - gets a head 2 head stat of two specified names"""
     gender = 0
-    rq = text.group(2)
+    rq = text.split(" ")
 
     if not rq:
         return 'Find a head to head with h2h or h2hw'
 
     try:
-        if (text.group(1)) == 'h2hm':
+        if text.startswith('h2hm'):
             gender = 2
             rq = text.split('h2hm')
-        if (text.group(1)) == 'h2hw':
+        if (text.startswith('h2hw'):
             gender = 4
             rq = text.split('h2hw')
         if gender == 1 or 2:
