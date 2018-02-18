@@ -17,7 +17,7 @@ def h2ha(text):
         if text.startswith('h2hm'):
             gender = 2
             rq = text.split('h2hm')
-        if (text.startswith('h2hw'):
+        if text.startswith('h2hw'):
             gender = 4
             rq = text.split('h2hw')
         if gender == 1 or 2:
