@@ -249,24 +249,24 @@ def scores(text):
                 city = results[i]["city"].lower()
             tourney_list.append(f'{city}')
 
-        if text in league_list:
-            if text.lower() == 'atp':
+        if text.lower().split()[-1] in league_list:
+            if text.lower().split()[-1] == 'atp':
                 if final_mstring == '':
                     final_mstring = 'No ATP matches today.'
                 return(final_mstring)
-            elif text.lower() == 'wta':
+            elif text.lower().split()[-1] == 'wta':
                 if final_wstring == '':
                     final_wstring = 'No WTA matches today.'
                 return(final_wstring)
-            elif text.lower() == 'cm':
+            elif text.lower().split()[-1] == 'cm':
                 if final_cmstring == '':
                     final_cmstring = "No ATP Challenger matches today."
                 return(final_cmstring)
-            elif text.lower() == 'cw':
+            elif text.lower().split()[-1] == 'cw':
                 if final_cwstring == '':
                     final_cwstring = "No WTA Challenger/125k matches today."
                 return(final_cwstring)
-        elif text.lower() in tourney_list:
+        elif text.lower().split()[-1] in tourney_list:
             final_tstring = ''
             for i in range(len(results)):
                 tourney = results[i]
@@ -371,7 +371,7 @@ def scores(text):
                             nst = nst + s + ' '
                     final_tstring = final_tstring + ot + nst + ft + '\n'
                     break
-            if not final_tstring or len(text) < 3:
+            if not final_tstring or len(text.lower().split()[-1]) < 3:
                 final_tstring = "Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger), a player that has been/is in/will be in a match today.), or a current tournament (city name, use a dash if there are two words). Player name/tournament input must be at least 3 characters (sorry Li Na)."
             return(final_tstring)
         else:
@@ -380,7 +380,7 @@ def scores(text):
                 for j in range(len(results[i]['match_data'])):
                     player1 = results[i]['match_data'][j]['team_data'][0]['player_name']
                     player2 = results[i]['match_data'][j]['team_data'][1]['player_name']
-                    if text in player1.lower() or text in player2.lower():
+                    if text.lower().split()[-1] in player1.lower() or text in player2.lower():
                         tourney = results[i]
                         match = tourney['match_data'][j]
                         final_pstring = final_pstring + f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){bold}: '
@@ -474,6 +474,6 @@ def scores(text):
                             except IndexError:
                                 pass
                         final_pstring = final_pstring + '\n'
-            if not final_pstring or len(text) < 3:
+            if not final_pstring or len(text.lower().split()[-1]) < 3:
                 final_pstring = "Please pick a valid tour (ATP, WTA, CM (Men's Challenger), or CW (Women's Challenger), a player that has been/is in/will be in a match today.), or a current tournament (city name, use a dash if there are two words). Player name/tournament input must be at least 3 characters (sorry Li Na)."
             return(final_pstring)
