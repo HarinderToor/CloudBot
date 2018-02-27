@@ -380,7 +380,7 @@ def scores(text):
                 for j in range(len(results[i]['match_data'])):
                     player1 = results[i]['match_data'][j]['team_data'][0]['player_name']
                     player2 = results[i]['match_data'][j]['team_data'][1]['player_name']
-                    if text.lower().split()[-1] in player1.lower() or text in player2.lower():
+                    if text.lower().split()[-1] in player1.lower() or text.lower().split()[-1] in player2.lower():
                         tourney = results[i]
                         match = tourney['match_data'][j]
                         final_pstring = final_pstring + f'{bold}{tourney["name"]} ({tourney["city"]}, {tourney["country"]}){bold}: '
