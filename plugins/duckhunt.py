@@ -52,7 +52,7 @@ game_status structure
 }
 """
 
-MSG_DELAY = 10
+MSG_DELAY = 7
 MASK_REQ = 3
 scripters = defaultdict(int)
 game_status = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
@@ -99,7 +99,7 @@ def start_hunt(bot, chan, message, conn):
 
 def set_ducktime(chan, conn):
     global game_status
-    game_status[conn.name][chan]['next_duck_time'] = random.randint(int(time()) + 480, int(time()) + 3600)
+    game_status[conn.name][chan]['next_duck_time'] = random.randint(int(time()) + 240, int(time()) + 2400)
     #game_status[conn.name][chan]['flyaway'] = game_status[conn.name][chan]['next_duck_time'] + 600
     game_status[conn.name][chan]['duck_status'] = 0
     # let's also reset the number of messages said and the list of masks that have spoken.
@@ -107,7 +107,7 @@ def set_ducktime(chan, conn):
     game_status[conn.name][chan]['masks'] = []
     return
 
-@hook.command("stophunt", autohelp=False)
+@hook.command("stophunt", autohelp=False, permissions=["op", "ignore"])
 def stop_hunt(chan, conn):
     """This command stops the duck hunt in your channel. Scores will be preserved"""
     global game_status
@@ -119,7 +119,7 @@ def stop_hunt(chan, conn):
     else:
         return "There is no game running in {}.".format(chan)
 
-@hook.command("duckkick")
+@hook.command("duckkick", permissions=["op"])
 def no_duck_kick(text, chan, conn, notice):
     """If the bot has OP or half-op in the channel you can specify .duckkick enable|disable so that people are kicked for shooting or befriending a non-existent goose. Default is off."""
     global game_status
@@ -147,8 +147,7 @@ def generate_duck():
     dnoise = dnoise[:rn] + u'\u200b' + dnoise[rn:]
     return (dtail, dbody, dnoise)
 
-
-@hook.periodic(11, initial_interval=11)
+@hook.periodic(7, initial_interval=7)
 def deploy_duck(message, bot):
     global game_status
     for network in game_status:
@@ -177,10 +176,32 @@ def deploy_duck(message, bot):
             continue
         continue
 
+@hook.command("duckspawn", permissions=["op"])
+def man_deploy_duck(message, bot):
+    global game_status
+    for network in game_status:
+        if network not in bot.connections:
+            continue
+        conn = bot.connections[network]
+        if not conn.ready:
+            continue
+        for chan in game_status[network]:
+            active = game_status[network][chan]['game_on']
+            duck_status = game_status[network][chan]['duck_status']
+            next_duck = game_status[network][chan]['next_duck_time']
+            chan_messages = game_status[network][chan]['messages']
+            chan_masks = game_status[network][chan]['masks']
+            #deploy a duck to channel
+            game_status[network][chan]['duck_status'] = 1
+            game_status[network][chan]['duck_time'] = time()
+            dtail, dbody, dnoise = generate_duck()
+            conn.message(chan, "{}{}{}".format(dtail, dbody, dnoise))
+            continue
+        continue
 
 def hit_or_miss(deploy, shoot):
     """This function calculates if the befriend or bang will be successful."""
-    if shoot - deploy < 1:
+    if shoot - deploy < 0.5:
         return .05
     elif 1 <= shoot - deploy <= 7:
         out = random.uniform(.60, .75)
@@ -258,7 +279,7 @@ def bang(nick, chan, message, db, conn, notice):
             out = random.choice(miss) + " You can try again in 7 seconds."
             scripters[nick.lower()] = shoot + 7
             return out
-        if chance == .05:
+        if chance < .05:
             out += "You pulled the trigger in {} seconds, that's mighty fast. Are you sure you aren't a script? Take a 2 hour cool down.".format(str(shoot - deploy))
             scripters[nick.lower()] = shoot + 7200
             if not random.random() <= chance:
