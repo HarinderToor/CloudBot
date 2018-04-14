@@ -7,7 +7,7 @@ import requests
 from cloudbot import hook
 
 
-@hook.command("scores", "tennis", "game", "match")
+@hook.command("atp", "wta", "scores", "tennis", "game", "match")
 def scores(text):
 
     now = datetime.now()
