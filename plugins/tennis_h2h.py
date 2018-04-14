@@ -4,24 +4,17 @@ from lxml import html
 from cloudbot import hook
 
 
-@hook.command('h2h', 'h2hm', 'h2hw')
+@hook.command('h2h', 'h2hm')
 def h2ha(text):
     """<name/name> - gets a head 2 head stat of two specified names"""
     gender = 0
-    rq = text.split(" ")
-
+    rq = text
     if not rq:
         return 'Find a head to head with h2h or h2hw'
 
     try:
-        if text.startswith('h2hm'):
-            gender = 2
-            rq = text.split('h2hm')
-        if text.startswith('h2hw'):
-            gender = 4
-            rq = text.split('h2hw')
+        gender = 2
         if gender == 1 or 2:
-            rq = rq[1]
             rq = rq.strip()
             rq = rq.split('/')
             p1 = rq[0]
