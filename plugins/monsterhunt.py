@@ -95,7 +95,7 @@ def start_hunt(bot, chan, message, conn):
     else:
         game_status[conn.name][chan]['game_on'] = 1
     set_ducktime(chan, conn)
-    message("Monsters have been spotted chasing people. Save the person and kill the monster with .bang, or try and befriend the monster and let it kill the person using .befriend. For more information on this creepy event see https://redd.it/56sqlx", chan)
+    message("Monsters have been spotted chasing people. Save the person and kill the monster with .bang, or try and befriend the monster and let it kill the person using .befriend.", chan)
 
 def set_ducktime(chan, conn):
     global game_status
@@ -119,7 +119,7 @@ def stop_hunt(chan, conn):
     else:
         return "There is no monster hunt running in {}.".format(chan)
 
-#@hook.command("monsterkick")
+@hook.command("monsterkick", permissions=["op", "ignore"])
 def no_duck_kick(text, chan, conn, notice):
     """If the bot has OP or half-op in the channel you can specify .monsterkick enable|disable so that people are kicked for shooting or befriending a non-existent monster. Default is off."""
     global game_status
