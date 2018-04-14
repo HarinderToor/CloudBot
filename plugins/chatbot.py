@@ -11,5 +11,5 @@ def get_key(bot):
 def chitchat(text):
     """chat with cleverbot.com"""
     if not api_key:
-        return "Please add an API key from http://www.cleverbot.com/api to enable this feature."
+        return "Please pay for an API key from http://www.cleverbot.com/api thanks in advance."
     return cb.say(text)
